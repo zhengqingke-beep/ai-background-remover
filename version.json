@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "releaseDate": "2026-03-28",
+  "downloadUrl": "https://github.com/zhengqingke-beep/ai-background-remover/releases/download/v1.0.0/AI智能抠图-1.0.0.zip",
+  "releaseNotes": "首次发布：AI智能抠图 v1.0.0\n\n✅ 基于 RMBG-1.4 的 AI 智能抠图\n✅ 支持任意尺寸图片\n✅ 批量处理功能\n✅ 边缘优化参数可调\n✅ 多格式导出\n✅ 完全本地运行",
+  "features": [
+    "AI 智能抠图",
+    "支持任意尺寸",
+    "批量处理",
+    "边缘优化",
+    "背景替换",
+    "多格式导出",
+    "参数记忆",
+    "隐私保护"
+  ],
+  "requirements": {
+    "os": "Windows 10 / Windows 11",
+    "memory": "8GB+",
+    "disk": "500MB"
+  }
+}
