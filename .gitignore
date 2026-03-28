@@ -1,0 +1,35 @@
+# Node
+node_modules/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build
+dist/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment
+.env
+.env.local
+
+# Temp
+*.tmp
+*.temp
+dist-temp/
+
+# Scripts
+*.ps1
+*.py
+*.bat
+
+# Large model files (distributed via Release)
+*.onnx

@@ -1,0 +1,72 @@
+{
+  "name": "ai-background-remover",
+  "version": "1.0.0",
+  "description": "AI智能抠图工具 - 纯本地运行，保护隐私，支持任意尺寸和批量处理",
+  "main": "src/main.js",
+  "author": {
+    "name": "庆科字体",
+    "email": "502753829@qq.com"
+  },
+  "homepage": "https://github.com/zhengqingke-beep/ai-background-remover#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhengqingke-beep/ai-background-remover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhengqingke-beep/ai-background-remover/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "background-remover",
+    "image-processing",
+    "ai",
+    "rmbg",
+    "electron",
+    "onnx"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.qingke.background-remover",
+    "productName": "AI智能抠图",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/",
+        "to": "assets/",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "asar": false
+  },
+  "dependencies": {
+    "electron-log": "^5.1.7"
+  },
+  "devDependencies": {
+    "electron": "^31.7.6",
+    "electron-builder": "^24.13.3"
+  }
+}

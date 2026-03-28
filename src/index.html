@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能抠图</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 模型下载弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-overlay.hidden { display: none; }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .modal .close-btn {
+            margin-top: 15px;
+        }
+
+        /* 关于弹窗 */
+        .about-modal {
+            max-width: 500px;
+        }
+
+        .about-modal .contact-info {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .about-modal .contact-info p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        /* README 弹窗 */
+        .readme-modal {
+            max-width: 700px;
+            max-height: 80vh;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        .readme-modal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .readme-modal h3 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .readme-modal ul {
+            padding-left: 20px;
+        }
+
+        .readme-modal li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .readme-modal .highlight {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* 调整画布显示 */
+        .canvas-wrapper {
+            position: relative;
+            min-height: 350px;
+            max-height: 70vh;
+        }
+        .canvas-wrapper canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI智能抠图</h1>
+            <p class="subtitle">纯本地运行 · 保护隐私 · 支持任意尺寸</p>
+            <p class="welcome-tip">👋 本软件由 @庆科字体 开发，本地运行，无需网络，免费无套路。</p>
+            <p class="official-tip">📢 官方下载：公众号「庆科字体」| 联系/反馈：502753829@qq.com</p>
+        </header>
+
+        <!-- 模型下载弹窗 -->
+        <div class="modal-overlay hidden" id="modelModal">
+            <div class="modal">
+                <h2>📥 下载AI模型</h2>
+                <p>首次使用需要下载 AI 模型（约 168MB）<br>下载完成后可完全离线使用</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">准备下载...</p>
+                
+                <div id="modalButtons">
+                    <button class="modal-btn modal-btn-primary" id="downloadBtn">开始下载</button>
+                    <button class="modal-btn modal-btn-secondary" id="skipBtn">暂不下载</button>
+                </div>
+                <p class="error-text" id="errorText"></p>
+            </div>
+        </div>
+
+        <!-- 关于弹窗 -->
+        <div class="modal-overlay hidden" id="aboutModal">
+            <div class="modal about-modal">
+                <h2>🎨 AI智能抠图 v1.0.0</h2>
+                <p>本软件由 <strong>@庆科字体</strong> 开发，本地运行，无需网络，免费无套路。</p>
+                
+                <div class="contact-info">
+                    <p><strong>📢 官方下载：</strong>公众号「庆科字体」</p>
+                    <p><strong>📧 联系/反馈：</strong>502753829@qq.com</p>
+                </div>
+                
+                <p>💝 如果觉得好用，欢迎赞助支持：</p>
+                <img id="zanzhuImg" src="" alt="赞助二维码" style="display:none;max-width:200px;">
+                
+                <button class="modal-btn modal-btn-primary close-btn" onclick="document.getElementById('aboutModal').classList.add('hidden')">关闭</button>
+            </div>
+        </div>
+
+        <!-- README 弹窗 -->
+        <div class="modal-overlay hidden" id="readmeModal">
+            <div class="modal readme-modal">
+                <h2>📖 AI智能抠图 - 使用说明</h2>
+                
+                <div class="highlight">
+                    <p><strong>🚀 核心特点：</strong>完全本地运行，无需网络，保护隐私，免费无套路！</p>
+                </div>
+                
+                <h3>✨ 功能特性</h3>
+                <ul>
+                    <li>🎯 <strong>AI 智能抠图</strong>：基于 RMBG-1.4 模型，一键去除背景</li>
+                    <li>📐 <strong>支持任意尺寸</strong>：横版、竖版、方形图片均可处理</li>
+                    <li>📦 <strong>批量处理</strong>：一次最多处理 10 张图片</li>
+                    <li>🎨 <strong>边缘优化</strong>：羽化、平滑、锐化等参数可调</li>
+                    <li>🖼️ <strong>背景替换</strong>：透明、纯色、图片背景自由切换</li>
+                    <li>💾 <strong>多格式导出</strong>：PNG、JPG、WEBP 格式任选</li>
+                    <li>⚙️ <strong>参数记忆</strong>：自动保存上次使用的设置</li>
+                </ul>
+                
+                <h3>💻 系统要求</h3>
+                <ul>
+                    <li>操作系统：Windows 10 / Windows 11</li>
+                    <li>内存：建议 8GB 以上</li>
+                    <li>磁盘空间：约 500MB（含 AI 模型）</li>
+                </ul>
+                
+                <h3>📖 使用教程</h3>
+                <ul>
+                    <li><strong>单张抠图</strong>：点击上传区域或拖拽图片 → 自动处理 → 调整参数 → 导出</li>
+                    <li><strong>批量抠图</strong>：选择多张图片 → 点击「开始批量处理」→ 导出全部</li>
+                </ul>
+                
+                <h3>🔒 隐私声明</h3>
+                <ul>
+                    <li>✅ 所有图片处理完全在本地完成</li>
+                    <li>✅ 不上传任何数据到服务器</li>
+                    <li>✅ AI 模型本地运行，无需网络</li>
+                </ul>
+                
+                <h3>📞 联系我们</h3>
+                <ul>
+                    <li><strong>官方下载</strong>：公众号「庆科字体」</li>
+                    <li><strong>联系/反馈</strong>：502753829@qq.com</li>
+                </ul>
+                
+                <button class="modal-btn modal-btn-primary close-btn" onclick="document.getElementById('readmeModal').classList.add('hidden')">关闭</button>
+            </div>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h3>点击或拖拽上传图片（最多10张）</h3>
+                <p>支持 JPG、PNG、WEBP、BMP 格式，支持任意尺寸图片</p>
+                <input type="file" id="fileInput" accept="image/*" multiple hidden>
+            </div>
+            
+            <!-- 快速操作 -->
+            <div class="quick-actions">
+                <button class="quick-btn" id="openFileBtn">📂 打开本地图片（多选）</button>
+            </div>
+        </div>
+
+        <!-- 批量处理面板 -->
+        <div class="batch-panel" id="batchPanel" style="display: none;">
+            <div class="batch-header">
+                <h3>批量抠图 <span id="batchCount">(0/0)</span></h3>
+                <button class="btn btn-secondary" id="clearBatchBtn">清空列表</button>
+            </div>
+            <div class="batch-list" id="batchList"></div>
+            <div class="batch-actions">
+                <button class="btn btn-primary" id="startBatchBtn">开始批量处理</button>
+                <button class="btn btn-secondary" id="exportAllBtn" style="display:none;">导出全部</button>
+            </div>
+        </div>
+
+        <!-- 主工作区 -->
+        <div class="workspace" id="workspace" style="display: none;">
+            <div class="canvas-container">
+                <!-- 左侧：原图 -->
+                <div class="panel">
+                    <h4>原图 <span class="img-size" id="originalSize"></span></h4>
+                    <div class="canvas-wrapper">
+                        <canvas id="originalCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- 右侧：结果 -->
+                <div class="panel">
+                    <h4>抠图结果
+                        <span class="loading" id="loading" style="display: none;">⏳ 正在处理中，请耐心等待...</span>
+                    </h4>
+                    <div class="canvas-wrapper checkerboard">
+                        <canvas id="resultCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <h5>🎨 边缘优化</h5>
+                    <div class="control-group">
+                        <label>边缘羽化 <span class="tip">(让边缘柔和)</span></label>
+                        <div class="slider-row">
+                            <input type="range" id="featherSlider" min="0" max="20" value="1" step="0.5">
+                            <span class="slider-value" id="featherValue">1</span>px
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>边缘平滑 <span class="tip">(减少锯齿)</span></label>
+                        <div class="slider-row">
+                            <input type="range" id="smoothSlider" min="0" max="10" value="1" step="0.5">
+                            <span class="slider-value" id="smoothValue">1</span>px
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>边缘锐化</label>
+                        <div class="slider-row">
+                            <input type="range" id="edgeEnhanceSlider" min="0" max="200" value="30" step="5">
+                            <span class="slider-value" id="edgeEnhanceValue">30</span>%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h5>⚖️ 透明度调节</h5>
+                    <div class="control-group">
+                        <label>透明度阈值</label>
+                        <div class="slider-row">
+                            <input type="range" id="thresholdSlider" min="0" max="255" value="80" step="1">
+                            <span class="slider-value" id="thresholdValue">80</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>对比度增强</label>
+                        <div class="slider-row">
+                            <input type="range" id="contrastSlider" min="0" max="100" value="20" step="5">
+                            <span class="slider-value" id="contrastValue">20</span>%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h5>🖼️ 背景替换</h5>
+                    <div class="control-group">
+                        <label>背景类型</label>
+                        <select id="bgType">
+                            <option value="transparent">透明背景</option>
+                            <option value="color">纯色背景</option>
+                            <option value="image">图片背景</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" id="bgColorGroup" style="display: none;">
+                        <label>背景颜色</label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+
+                    <div class="control-group" id="bgImageGroup" style="display: none;">
+                        <label>背景图片</label>
+                        <input type="file" id="bgFile" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h5>💾 导出设置</h5>
+                    <div class="control-group">
+                        <label>导出格式</label>
+                        <select id="formatSelect">
+                            <option value="png">PNG（透明背景）</option>
+                            <option value="jpeg">JPG（白色背景）</option>
+                            <option value="webp">WEBP（透明背景）</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>导出质量</label>
+                        <select id="qualitySelect">
+                            <option value="1">100%（最高）</option>
+                            <option value="0.95" selected>95%</option>
+                            <option value="0.9">90%</option>
+                            <option value="0.8">80%</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="reprocessBtn">🔄 重新处理</button>
+                <button class="btn btn-primary" id="downloadBtn2">💾 导出图片</button>
+                <button class="btn btn-secondary" id="resetBtn">❌ 重置</button>
+            </div>
+        </div>
+
+        <!-- 模型状态 -->
+        <div class="model-status" id="modelStatus">
+            <div class="status-loading" id="statusLoading">
+                <span class="spinner"></span>
+                <span>正在加载 AI 模型，请稍候...</span>
+            </div>
+            <div class="status-ready" id="statusReady" style="display: none;">
+                <span>✅</span>
+                <span>AI 模型已就绪</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="ort.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

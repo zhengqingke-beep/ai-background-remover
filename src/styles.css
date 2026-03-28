@@ -1,0 +1,455 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+header {
+    text-align: center;
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.welcome-tip {
+    color: #667eea;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.official-tip {
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+/* 上传区域 */
+.upload-section {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.upload-area {
+    max-width: 600px;
+    margin: 0 auto 20px;
+    border: 3px dashed #667eea;
+    border-radius: 16px;
+    padding: 50px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: #764ba2;
+    background: linear-gradient(135deg, #f0f2ff 0%, #e8ebff 100%);
+    transform: translateY(-2px);
+}
+
+.upload-icon {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+}
+
+.upload-area h3 {
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.upload-area p {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* 快速操作 */
+.quick-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quick-btn {
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    color: #667eea;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* 批量处理面板 */
+.batch-panel {
+    padding: 25px 20px;
+    background: #f8f9fa;
+}
+
+.batch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.batch-header h3 {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.batch-list {
+    max-height: 400px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.batch-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.batch-item:last-child {
+    border-bottom: none;
+}
+
+.batch-item-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    background: #eee;
+}
+
+.batch-item-info {
+    flex: 1;
+}
+
+.batch-item-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.batch-item-status {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.batch-item-status.done {
+    color: #28a745;
+}
+
+.batch-item-status.error {
+    color: #dc3545;
+}
+
+.batch-item-remove {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+}
+
+.batch-item-remove:hover {
+    color: #dc3545;
+}
+
+.batch-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* 工作区 */
+.workspace {
+    padding: 25px 20px;
+}
+
+.canvas-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.panel {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.panel h4 {
+    color: #333;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.img-size {
+    font-weight: normal;
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.loading {
+    color: #667eea;
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.canvas-wrapper {
+    background: white;
+    border-radius: 8px;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    max-height: 60vh;
+}
+
+.canvas-wrapper canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* 棋盘格背景 */
+.checkerboard {
+    background-image:
+        linear-gradient(45deg, #eee 25%, transparent 25%),
+        linear-gradient(-45deg, #eee 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #eee 75%),
+        linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* 控制面板 */
+.control-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.control-section {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.control-section h5 {
+    color: #333;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #667eea;
+}
+
+.control-group {
+    margin-bottom: 12px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.control-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.control-group .tip {
+    color: #888;
+    font-weight: normal;
+    font-size: 0.7rem;
+}
+
+.control-group input[type="color"] {
+    width: 100%;
+    height: 35px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.control-group input[type="range"] {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+}
+
+.control-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    cursor: pointer;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-value {
+    font-weight: 600;
+    color: #667eea;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* 操作按钮 */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #f0f2f5;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #e4e8ec;
+}
+
+/* 模型状态 */
+.model-status {
+    text-align: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+}
+
+.status-loading,
+.status-ready {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.status-loading { color: #666; }
+.status-ready { color: #28a745; }
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #eee;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 响应式 */
+@media (max-width: 800px) {
+    .canvas-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .panel {
+        max-height: 350px;
+        overflow: auto;
+    }
+}
